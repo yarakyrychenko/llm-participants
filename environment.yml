@@ -1,0 +1,14 @@
+name: human-ai-eval
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - openai
+  - pandas
+  - numpy
+  - scipy
+  - scikit-learn
+  - seaborn
+  - matplotlib
+  - jupyter
+  - ipykernel

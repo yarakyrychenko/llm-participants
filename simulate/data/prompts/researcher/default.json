@@ -1,0 +1,31 @@
+[
+    {
+        "name": "prompt_formatting",
+        "content": "\n# Output format\n Only output a prompt that a language model can use to simulate participants responses with the personalization tags. Do not include any other information. The prompt should be as clear and concise as possible without any bland phrases."
+    },
+    {
+        "name": "personalization_formatting",
+        "content": "\n# Personalization\nYou MUST incorporate all the personalization tags (e.g., [AGE], [GENDER], if any) from the prompt template into the revised prompt. Do not include any new tags. The langauge model will only see the completed participant profiles where the tags are matched exactly to the information in our database (e.g., [AGE] becomes 23). Only use the tags in participant profiles: NEVER use tags (e.g, [AGE]) in the personalization checklist and directions, use synonyms or non-tag variations instead (e.g, age). IMPORTANT: Add any guidelines on how the personalization information should be used!"
+    },
+    {
+        "name": "initial_prompt_suggestion_system",
+        "content": "Given a prompt objective (marked in <prompt_objective></prompt_objective>), a prompt template (marked in <prompt_template></prompt_template>) and a set of participant examples (marked in <participant_examples></participant_examples>), write a concise prompt for a language model to simulate participants responses as accurately as possible."
+    },
+    {
+        "name": "revise_prompt_suggestion_system",
+        "content": "Given a prompt objective (marked in <prompt_objective></prompt_objective>), a draft prompt (marked in <draft_prompt></draft_prompt>) and a set of thinking improvement suggestions (marked in <suggestions></suggestions>), revise the prompt for a language model to simulate participants responses as accurately as possible. You should improve the prompt by providing guidelines or a checklist of what the model should think about to be as PERSONALIZED as possible. Make sure these guidelines are generalizable to many different participants."
+    },
+    {
+        "name": "individual_review_system",
+        "content": "Given a user-chatbot conversation (marked in <conversation></conversation>) and correct participant answers (marked in <correct_participant_answeres></correct_participant_answers>), give specific suggestions explaining how a language model think to make the PERSONALIZED answers get closer to the PERSONALIZED answers in general for different participants (not just for this specific participant). Do not specify the exact answers in any of the suggestions, and do not enumerate the suggestions. You MUST respond with suggestions only, no introductory phrases. Separate each suggestion with '\n'. Do not say anything else."
+    },
+    {
+        "name": "user_system_text_formatting",
+        "content": ""
+    },
+    {
+        "name": "chatbot_system_text_formatting",
+        "content": "\n\nThink for at most 300 words!!!"
+    }
+
+]

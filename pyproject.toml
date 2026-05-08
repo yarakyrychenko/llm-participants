@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "human-ai-eval"
+version = "0.1.0"
+description = "Survey simulation and evaluation tools."
+readme = "README.md"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["simulate", "simulate.*"]
+
+[tool.setuptools.package-data]
+simulate = ["data/**/*.json", "personas/*.json", "personas/*.csv"]
