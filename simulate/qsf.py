@@ -68,6 +68,14 @@ def _get_question_text(payload: dict) -> str:
     return _strip_html(payload.get("QuestionDescription", ""))
 
 
+def _coerce_int(value):
+    """Return int(value) when possible, else value unchanged."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return value
+
+
 def _contains_iframe_content(payload: dict) -> bool:
     text = " ".join(
         str(payload.get(key, ""))
@@ -122,6 +130,29 @@ def _materialize_advanced_randomization(
     return ordered
 
 
+def _resolve_choice_order(payload: dict, choices: dict) -> list[str]:
+    randomization = payload.get("Randomization") or {}
+    advanced = randomization.get("Advanced") or {}
+    undisplayed = set(_normalize_ordered_values(advanced.get("Undisplayed")))
+
+    if randomization.get("Type") == "Advanced":
+        fixed_order = _normalize_ordered_values(advanced.get("FixedOrder"))
+        randomize_all = _normalize_ordered_values(advanced.get("RandomizeAll"))
+        ordered = [
+            key
+            for key in fixed_order + randomize_all
+            if key in choices and key not in undisplayed
+        ]
+        for key in _normalize_ordered_values(payload.get("ChoiceOrder")):
+            if key in choices and key not in undisplayed and key not in ordered:
+                ordered.append(key)
+        if ordered:
+            return ordered
+
+    choice_order = _normalize_ordered_values(payload.get("ChoiceOrder"))
+    return choice_order or [str(key) for key in choices.keys()]
+
+
 # ---------------------------------------------------------------------------
 # Per-type parsers
 # ---------------------------------------------------------------------------
@@ -166,18 +197,27 @@ def _parse_matrix(payload: dict) -> dict:
     tag = payload["DataExportTag"]
     choices = payload.get("Choices", {})
     answers = payload.get("Answers", {})
+    recode = payload.get("RecodeValues") or {}
+    export_tags = payload.get("ChoiceDataExportTags") or {}
+    choice_order = _resolve_choice_order(payload, choices)
+    answer_order = payload.get("AnswerOrder") or list(answers.keys())
 
     items = {}
-    for key, value in choices.items():
+    for key in choice_order:
+        skey = str(key)
+        value = choices.get(skey) or choices.get(key) or {}
         display = _strip_html(value.get("Display", ""))
-        item_key = f"{tag}_{key}"
+        item_key = export_tags.get(skey) or export_tags.get(key) or f"{tag}_{skey}"
         items[item_key] = display if display else item_key
 
     options = {}
-    for key, value in answers.items():
+    for key in answer_order:
+        skey = str(key)
+        value = answers.get(skey) or answers.get(key) or {}
         display = _strip_html(value.get("Display", ""))
-        label = display if display else str(key)
-        options[label] = int(key)
+        label = display if display else skey
+        raw_value = recode.get(skey, key)
+        options[label] = _coerce_int(raw_value)
 
     return {
         "name": tag,
@@ -192,12 +232,17 @@ def _parse_mc(payload: dict) -> dict:
     """Multiple-choice question → multiple choice scale (single item)."""
     tag = payload["DataExportTag"]
     choices = payload.get("Choices", {})
+    recode = payload.get("RecodeValues") or {}
+    choice_order = _resolve_choice_order(payload, choices)
 
     options = {}
-    for key, value in choices.items():
+    for key in choice_order:
+        skey = str(key)
+        value = choices.get(skey) or choices.get(key) or {}
         display = _strip_html(value.get("Display", ""))
-        label = display if display else str(key)
-        options[label] = int(key)
+        label = display if display else skey
+        raw_value = recode.get(skey, key)
+        options[label] = _coerce_int(raw_value)
 
     question_text = _get_question_text(payload)
 

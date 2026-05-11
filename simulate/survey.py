@@ -1086,6 +1086,15 @@ class Survey:
     def _branch_ignore_case(self, expression):
         return str(expression.get("IgnoreCase", "")).lower() in {"1", "true", "yes"}
 
+    def _resolve_branch_choice_value(self, qid, raw_choice_id):
+        raw_choice_key = str(raw_choice_id)
+        meta = self.flow_data.get("questions", {}).get(qid, {}) if self.flow_data else {}
+        payload = meta.get("raw_payload", {})
+        recode = payload.get("RecodeValues") or {}
+        value = recode.get(raw_choice_key, raw_choice_id)
+        parsed = get_int(value)
+        return parsed if parsed is not None else value
+
     def _branch_value_matches_choice(self, left, right, ignore_case=False):
         if isinstance(left, dict):
             return any(
@@ -1136,7 +1145,11 @@ class Survey:
             locator = expression.get("ChoiceLocator", "")
             match = re.search(r"/SelectableChoice/(\d+)", locator)
             is_choice_comparison = match is not None
-            right = int(match.group(1)) if match else expression.get("RightOperand")
+            right = (
+                self._resolve_branch_choice_value(qid, match.group(1))
+                if match
+                else expression.get("RightOperand")
+            )
         elif logic_type == "EmbeddedField":
             field = expression.get("LeftOperand")
             left = state["embedded_data"].get(field)

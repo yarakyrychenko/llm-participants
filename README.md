@@ -216,11 +216,11 @@ survey = Survey("example/qsf/survey.qsf")
 
 Questions of type `DB` (descriptive text), `Timing`, `Meta`, and `CS` are not emitted as scales. For `TE` questions, the parser now promotes participant-facing prompts into `free text` scales, while hidden or workflow-oriented text-entry fields (for example blank prompt slots or auto-filled embedded values) remain non-administered flow steps.
 
-Saved item keys are taken directly from Qualtrics `DataExportTag` identifiers (e.g. `Q1_1`, `Q3_2`) so formatted result columns remain stable and machine-readable. The model does not see those internal keys during survey administration; prompts use neutral aliases such as `item_1`, `item_2`, and the runtime maps the returned JSON back to the original keys before scoring or saving results.
+Saved item keys are taken directly from Qualtrics `DataExportTag` identifiers (e.g. `Q1_1`, `Q3_2`) so formatted result columns remain stable and machine-readable. For matrix questions, row item keys honor Qualtrics `ChoiceDataExportTags` when present. Multiple-choice and matrix answer values honor Qualtrics `RecodeValues`, so author-defined exports such as `0`-to-`10` scales are preserved instead of exposing Qualtrics' internal choice IDs. Option prompts follow Qualtrics display ordering, including advanced fixed choice order metadata when present. The model does not see those internal keys during survey administration; prompts use neutral aliases such as `item_1`, `item_2`, and the runtime maps the returned JSON back to the original keys before scoring or saving results.
 
 Participant-facing Qualtrics piped text is resolved at runtime when the needed value is available. The runtime supports selected-choice pipes such as `${q://QID123/ChoiceGroup/SelectedChoices}` and embedded-field pipes such as `${e://Field/Condition}`; unresolved tokens are left unchanged and recorded as flow warnings rather than guessed.
 
-Supported branch operators include selected-choice and equality checks (`Selected`, `NotSelected`, `EqualTo`, `NotEqualTo`), numeric comparisons (`GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual`), emptiness checks (`Empty`, `NotEmpty`), and containment checks (`DoesContain`, `DoesNotContain`). Containment branches respect Qualtrics `IgnoreCase` metadata for text responses and embedded fields.
+Supported branch operators include selected-choice and equality checks (`Selected`, `NotSelected`, `EqualTo`, `NotEqualTo`), numeric comparisons (`GreaterThan`, `GreaterThanOrEqual`, `LessThan`, `LessThanOrEqual`), emptiness checks (`Empty`, `NotEmpty`), and containment checks (`DoesContain`, `DoesNotContain`). Selected-choice branches are evaluated against the same `RecodeValues` used for parsed answer outputs, so attention checks and eligibility gates stay aligned with the values the model returns. Containment branches respect Qualtrics `IgnoreCase` metadata for text responses and embedded fields.
 
 ### From a JSON file
 
@@ -821,7 +821,7 @@ MPLCONFIGDIR=/tmp/mpl conda run -n human-ai-eval python trust/01_generate_trust_
 Run the next range with an explicit model:
 
 ```bash
-MPLCONFIGDIR=/tmp/mpl conda run -n human-ai-eval python trust/01_generate_trust_data.py --participant-range 30:60 --user-model openai/gpt-5.4-mini
+MPLCONFIGDIR=/tmp/mpl conda run -n human-ai-eval python trust/01_generate_trust_data.py --participant-range 0:500 --user-model openai/gpt-4o-mini
 ```
 
 The default chunk size is 100 participants. After each chunk, the script writes a chunk JSON file and recompiles partial outputs, so completed work is preserved if a later participant fails or the run is interrupted. Use `--retry-errors` to rerun only IDs whose existing rows contain errors, or `--fresh` to ignore existing partial output for the exact range and model.
