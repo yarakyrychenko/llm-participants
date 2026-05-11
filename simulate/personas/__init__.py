@@ -110,7 +110,7 @@ def load_gss_personas():
 
     df["age"] = pd.to_numeric(df["age"], errors="coerce")
     df["gender"] = df["sex"].map(clean_title)
-    df["race"] = df["race"].map(clean_title)
+    df["race"] = df["racecen1"].map(clean_title)
     df["region"] = df["region"].map(clean_title)
     df["education"] = df["degree"].map(clean_title)
     df["income_level"] = df["income16"]
@@ -118,9 +118,6 @@ def load_gss_personas():
     df["party"] = df["partyid"]
     df["political_orientation"] = df["polviews"]
     df["religion"] = df["relig"]
-    df["ethnicity"] = df["hispanic"].fillna("").astype(str).str.strip().map(
-        lambda value: "Hispanic" if value and value.lower() != "not hispanic" else "Non-Hispanic"
-    )
     df["bio"] = ""
     df["country"] = "United States"
     df["country_code"] = "US"

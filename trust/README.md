@@ -1,7 +1,12 @@
 
 # Trust Megastudy 
 
-## GPT-4o-mini pilot 500 responses
+## openai/gpt-4o-mini
 ```bash
-conda run -n human-ai-eval python trust/01_generate_trust_data.py --participant-range 0:500 --user-model openai/gpt-4o-mini
+conda run -n human-ai-eval python trust/01_generate_trust_data.py --user-model openai/gpt-4o-mini
+```
+
+## meta-llama/llama-3.3-70b-instruct
+```bash
+conda run -n human-ai-eval python trust/01_generate_trust_data.py --user-model meta-llama/llama-3.3-70b-instruct
 ```
