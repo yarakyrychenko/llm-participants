@@ -30,7 +30,16 @@ Released Jul 22, 2025
 Knowledge cutoff Jan 31, 2025
 $0.10/M input tokens
 $0.40/M output tokens
-[Collecting responses]
+[Collected 9000 responses]
+
+## mistralai/ministral-14b-2512
+```bash
+conda run -n human-ai-eval python trust/01_generate_trust_data.py --user-model mistralai/ministral-14b-2512
+```
+Dec 2, 2025
+$0.20/M input tokens
+$0.20/M output tokens
+[Collectting responses]
 
 ## openai/gpt-5-nano
 
@@ -41,6 +50,7 @@ Released Aug 7, 2025
 Knowledge cutoff May 31, 2024
 $0.20/M input tokens
 $1.25/M output tokens
+[Failed, takes too long]
 
 ## google/gemma-4-31b-it
 
@@ -50,4 +60,4 @@ conda run -n human-ai-eval python trust/01_generate_trust_data.py --user-model g
 Released Apr 2, 2026
 $0.13/M input tokens
 $0.38/M output tokens
-[18 takes 221.91s]
+[Failed, takes too long]
